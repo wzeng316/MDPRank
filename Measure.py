@@ -6,62 +6,45 @@ iMaxPosition = 10
 topN = 10
 
 def MeasureW_onequery(w, Querys, original):
-    
-    nfeature=w.size
     n_query=len(Querys)
-        
     meanmap = 0
     meanNDCG = np.zeros(topN)
-    
+
     for queryid in Querys:
-        
         labels=[]
         features=[]
-        
+
         for label in original[queryid].keys():
             for doc in original[queryid][label].keys():
                 labels.append(label)
                 features.append(original[queryid][label][doc])
-    
+
         feature_matrix = np.asarray(features)
-        label_matrix = np.asarray(labels)
-        # print labels
-        
+        label_matrix = np.asarray(labels)  # print labels
+
         score = np.dot(feature_matrix, w)
         rates=sort(score, label_matrix)
-        # print rates
-        
-        
-        #print rates
+
         themap = MAP(rates)
-        meanmap = meanmap + themap        
+        meanmap = meanmap + themap
         theNDCG = NDCG(topN, rates)
         meanNDCG = meanNDCG + theNDCG
-    
     return meanmap/n_query, meanNDCG/n_query
 
 
-def MeasureW(w, query_in_original):
-    
-    labels=[]
-    features=[]
-    
-    for label in original[queryid].keys():
-        for doc in original[queryid][label].keys():
-            labels.append(label)
-            features.append(original[queryid][label][doc])
-    
-    feature_matrix = np.asarray(features)
-    label_matrix = np.asarray(labels)
-
-    score = np.dot(feature_matrix, w)
-    rates=sort(score, label_matrix)
-        
-    #print rates
-    themap = MAP(rates)
-    theNDCG = NDCG(topN, rates)
-    
-    return themap, themap
+def MeasureW(W, original_data):
+    thendcg = np.zeros(topN)
+    themap = 0.0
+    nquery = len(original_data.keys())
+    for queryid in original_data.keys():
+        QueryInfo = original_data[queryid]
+        score = np.dot(QueryInfo['feature'], W)
+        rates = QueryInfo['label'][np.argsort(score)[np.arange(len(score) - 1, -1, -1)]]
+        themap += MAP(rates)
+        thendcg += NDCG(topN, rates)
+    themap = themap / nquery
+    thendcg = thendcg / nquery
+    return themap, thendcg
 
 
 def MAP(rates):
@@ -74,18 +57,13 @@ def MAP(rates):
             avgPrecision += (numRelevant / (iPos + 1))
     if  numRelevant == 0:
         return 0.0
-    #print avgPrecision, numRelevant, avgPrecision / numRelevant
     return avgPrecision / numRelevant
 
 def NDCG(topN, rates):
     ndcg = np.zeros(topN)
     dcg = DCG(topN,rates)
-
-
     stRates = sorted(rates,key=f,reverse=True)
     bestDcg = DCG(topN,stRates)
-    #print dcg[0], bestDcg[0]
-            
     iPos =0
     while iPos < topN and iPos < len(rates):
         if (bestDcg[iPos] != 0):
@@ -127,26 +105,67 @@ def sort(score, label):
     return label
 
 
-def GetReturn(rates):
-    gain = np.zeros(len(rates))
 
-    thegain = 1.0 * hsNdcgRelScore[str(rates[0])]
-    for iPos in range(1, len(rates)):
-        r = 0
-        if (iPos < len(rates)):
+###################################   DCG #########################################################################
+def GetReward_DCG(rates):
+    reward = np.zeros(len(rates))
+    for iPos in range(len(rates)):
+        if iPos < len(rates):
             r = rates[iPos]
         else:
             r = 0
-
-        if (iPos < 2):
-            thegain += hsNdcgRelScore[str(r)]
+        if iPos < 2:
+            reward[iPos] = hsNdcgRelScore[str(r)]
         else:
-            thegain += round(hsNdcgRelScore[str(r)] * np.log(2.0) / np.log(iPos + 1.0), 6)
+            reward[iPos] = round(hsNdcgRelScore[str(r)] * np.log(2.0) / np.log(iPos + 1.0), 6)
+    return  reward
 
+def GetReturn_DCG(rates):
+    ndoc = len(rates)
+    returns = GetReward_DCG(rates)
+    for iPos in range(len(rates)-1):
+        returns[ndoc -2 - iPos] += returns[ndoc -1 - iPos]
+    return returns
+
+###################################   0-1  ##################################################################
+def GetReward_Step(rates):
+    reward = np.zeros(len(rates))
     for iPos in range(len(rates)):
-        gain[iPos] = thegain
+        if iPos < len(rates):
+            r = rates[iPos]
+        else:
+            r = 0
+        if r ==0:
+            reward[iPos] = 0
+        else:
+            reward[iPos] = 1
+    return  reward
 
-    # if np.sum(gain * gain)>0:
-    #     gain = gain / np.sqrt(np.sum(gain*gain))
+def GetReturn_Step(rates):
+    ndoc = len(rates)
+    returns = GetReward_Step(rates)
+    for iPos in range(len(rates)-1):
+        returns[ndoc -2 - iPos] += returns[ndoc -1 - iPos]
+    return returns
 
-    return gain
+
+###################################   Precision  ##################################################################
+def GetReward_Precision(rates):
+    reward = np.zeros(len(rates))
+    for iPos in range(len(rates)):
+        if iPos < len(rates):
+            r = rates[iPos]
+        else:
+            r = 0
+        if r ==0:
+            reward[iPos] = 0
+        else:
+            reward[iPos] = 1
+    return  reward
+
+def GetReturn_Precision(rates):
+    ndoc = len(rates)
+    returns = GetReward_Precision(rates)
+    for iPos in range(len(rates)-1):
+        returns[ndoc -2 - iPos] += returns[ndoc -1 - iPos]
+    return returns

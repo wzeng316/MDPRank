@@ -1,6 +1,9 @@
 
 import tensorflow as tf
 import time
+import yaml
+
+import os
 
 from LoadData import *
 from Measure import *
@@ -86,7 +89,7 @@ class RL(object):
                 del labeltmp[choice]
                 del positions[choice]
 
-            reward = GetReturn(QueryInfo['label'][ranklist])
+            reward = GetReturn_DCG(QueryInfo['label'][ranklist])
 
             self.memory.append({'queryid': queryid, 'score': score, 'reward': reward, 'ranklist': ranklist})
 
@@ -141,8 +144,6 @@ class RL(object):
             QueryInfo = Data[queryid]
 
             score = sess.run(scores, feed_dict={input_docs: QueryInfo['feature']})[0].reshape([-1])
-
-
             rates = QueryInfo['label'][np.argsort(score)[np.arange(len(score) - 1, -1, -1)]]
 
             themap += MAP(rates)
@@ -165,23 +166,28 @@ if __name__ == '__main__':
     fold = sys.argv[1]
     print fold
 
-    datafile = '/mnt/disk1/zengwei/Data/MSLR-WEB10K' + dataset + '/' + fold + '/'
+    Ip_info = str(yaml.load(file(os.environ['HOME']+'/.host_info.yml'))['host'])
+    print Ip_info
+
+    if Ip_info == '217':
+        datafile = '/home/zengwei/data/' + dataset + '/' + fold + '/'
+    else:
+        datafile = '/mnt/disk1/zengwei/Data/MSLR-WEB10K' + dataset + '/' + fold + '/'
+
 
     train_data = LoadData(datafile+'train.txt', dataset)
     vali_data  = LoadData(datafile+'vali.txt',  dataset)
     test_data  = LoadData(datafile+'test.txt',  dataset)
 
-
-
     nquery = len(train_data.keys())
 
     Nfeature=136
-    Learningrate=0.001
+    Learningrate=0.0001
     Nepisode=100
 
     Lenepisode=10
 
-    Resultfile = 'ApprenticeRank/V1_2_'+dataset+'_'+fold+'_'+time.strftime("%m%d", time.localtime())
+    Resultfile = 'ApprenticeRank/'+ Ip_info + '_V1_2_'+dataset+'_'+fold+'_'+time.strftime("%m%d", time.localtime())
 
 
     learner = RL(Nfeature, Learningrate, Lenepisode, Resultfile)
@@ -203,3 +209,4 @@ if __name__ == '__main__':
         learner.Eval(train_data,'train')
         learner.Eval(vali_data,'vali')
         learner.Eval(test_data,'test')
+
