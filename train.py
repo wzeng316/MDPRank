@@ -1,14 +1,22 @@
+import  time
+import yaml
 from MDPRank import *
-
-
-
-
-
 
 if __name__ == '__main__':
 
+    fold = sys.argv[1]
 
+    ###########################   Load the parameter ###########################################
+    Para = yaml.load(file('Para_info.yml'))
 
+    version = Para['version']
+    dataset = Para['dataset']
+    Nfeature = Para['Nfeature']
+    Learningrate = Para['Learningrate']
+    Nepisode = Para['Nepisode']
+    Lenepisode = Para['Lenepisode']
+
+    ######################### Load Data ##########################################################
     Ip_info = str(yaml.load(file(os.environ['HOME']+'/.host_info.yml'))['host'])
     print Ip_info
 
@@ -17,24 +25,15 @@ if __name__ == '__main__':
     else:
         datafile = '/mnt/disk1/zengwei/Data/MSLR-WEB10K' + dataset + '/' + fold + '/'
 
-
     train_data = LoadData(datafile+'train.txt', dataset)
     vali_data  = LoadData(datafile+'vali.txt',  dataset)
     test_data  = LoadData(datafile+'test.txt',  dataset)
-
     nquery = len(train_data.keys())
 
-    Nfeature=136
-    Learningrate=0.0001
-    Nepisode=100
-
-    Lenepisode=10
-
-    Resultfile = 'ApprenticeRank/'+ Ip_info + '_V1_2_'+dataset+'_'+fold+'_'+time.strftime("%m%d", time.localtime())
+    Resultfile = 'ApprenticeRank/'+ Ip_info + version + dataset + '_' + fold + '_' + time.strftime("%m%d", time.localtime())
 
 
     learner = RL_BP(Nfeature, Learningrate, Lenepisode, Resultfile)
-
 
 
     learner.Eval(train_data, 'train')
