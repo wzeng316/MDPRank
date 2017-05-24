@@ -23,7 +23,7 @@ if __name__ == '__main__':
     if Ip_info == '217':
         datafile = '/home/zengwei/data/' + dataset + '/' + fold + '/'
     else:
-        datafile = '/mnt/disk1/zengwei/Data/MSLR-WEB10K' + dataset + '/' + fold + '/'
+        datafile = '/mnt/disk1/zengwei/Data/' + dataset + '/' + fold + '/'
 
     train_data = LoadData(datafile+'train.txt', dataset)
     vali_data  = LoadData(datafile+'vali.txt',  dataset)
