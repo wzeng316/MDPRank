@@ -3,7 +3,7 @@ import numpy as np
 hsNdcgRelScore = {'4':15,'3':7,'2':3,'1':1,'0':0}
 hsPrecisionRel={'4':1,'3':1,'2':1,'1':1,'0':0}
 iMaxPosition = 10
-topN = 10
+# topN = 10
 
 def MeasureW_onequery(w, Querys, original):
     n_query=len(Querys)
@@ -88,6 +88,20 @@ def DCG(topN,rates):
         else:
             dcg[iPos] = dcg[iPos - 1] + round(hsNdcgRelScore[str(r)] * np.log(2.0) / np.log(iPos + 1.0),6)
     return dcg
+
+def DCG_all(rates):
+    dcg = 1.0*hsNdcgRelScore[str(rates[0])]
+    for iPos in range(1,len(rates)):
+        if (iPos < len(rates)):
+            r = rates[iPos]
+        else:
+            r = 0
+        if (iPos < 2):
+            dcg += hsNdcgRelScore[str(r)]
+        else:
+            dcg += round(hsNdcgRelScore[str(r)] * np.log(2.0) / np.log(iPos + 1.0),6)
+    return dcg
+
 
 def sort(score, label):
     n=len(score)
