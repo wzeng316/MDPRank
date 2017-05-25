@@ -1,0 +1,15 @@
+/home/zengwei/venv/lib/python2.7/site-packages/yaml/representer.py:142: FutureWarning: comparison to `None` will result in an elementwise object comparison in the future.
+  if data in [None, ()]:
+217
+/home/zengwei/data/MSLR-WEB10K/Fold3/train.txt
+MSLR-WEB10K <_sre.SRE_Match object at 0x3372558> None
+/home/zengwei/data/MSLR-WEB10K/Fold3/vali.txt
+MSLR-WEB10K <_sre.SRE_Match object at 0x3372558> None
+/home/zengwei/data/MSLR-WEB10K/Fold3/test.txt
+MSLR-WEB10K <_sre.SRE_Match object at 0x3372558> None
+Traceback (most recent call last):
+  File "train.py", line 39, in <module>
+    learner.Eval(train_data, 'train')
+  File "/home/zengwei/MDPRank/MDPRank.py", line 161, in Eval
+    self.resultfile.write(info)
+AttributeError: 'str' object has no attribute 'write'

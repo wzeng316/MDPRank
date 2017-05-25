@@ -10,6 +10,7 @@ if __name__ == '__main__':
     Para = yaml.load(file('Para_info.yml'))
 
     version = Para['version']
+    model = Para['model']
     dataset = Para['dataset']
     Nfeature = Para['Nfeature']
     Learningrate = Para['Learningrate']
@@ -30,21 +31,17 @@ if __name__ == '__main__':
     test_data  = LoadData(datafile+'test.txt',  dataset)
     nquery = len(train_data.keys())
 
-    Resultfile = 'ApprenticeRank/'+ Ip_info + version + dataset + '_' + fold + '_' + time.strftime("%m%d", time.localtime())
-
+    Resultfile = open('ApprenticeRank/'+ Ip_info + '_'+ version + '+' + dataset + '_' + fold + '_' + model +'_'+ time.strftime("%m%d", time.localtime()),'w')
 
     learner = RL_BP(Nfeature, Learningrate, Lenepisode, Resultfile)
-
 
     learner.Eval(train_data, 'train')
     learner.Eval(vali_data , 'vali')
     learner.Eval(test_data , 'test')
     # np.random.seed(datetime.datetime.now().microsecond)
 
-
     for ite in range(10000):
         batch = np.random.randint(nquery,size=Nepisode)
-
         Queryids=[]
         for i in batch:
             Queryids.append(train_data.keys()[i])

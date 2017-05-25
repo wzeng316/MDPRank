@@ -1,0 +1,40 @@
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "train.py", line 10, in <module>
+  File "train.py", line 10, in <module>
+        Para = yaml.load(file('Para_info.yml'))
+Para = yaml.load(file('Para_info.yml'))
+IOErrorIOError: : [Errno 2] No such file or directory: 'Para_info.yml'[Errno 2] No such file or directory: 'Para_info.yml'
+
+Traceback (most recent call last):
+  File "train.py", line 10, in <module>
+    Para = yaml.load(file('Para_info.yml'))
+IOError: [Errno 2] No such file or directory: 'Para_info.yml'
+Traceback (most recent call last):
+  File "train.py", line 10, in <module>
+    Para = yaml.load(file('Para_info.yml'))
+IOError: [Errno 2] No such file or directory: 'Para_info.yml'
+Traceback (most recent call last):
+  File "train.py", line 10, in <module>
+    Para = yaml.load(file('Para_info.yml'))
+IOError: [Errno 2] No such file or directory: 'Para_info.yml'
+Traceback (most recent call last):
+  File "train.py", line 10, in <module>
+    Para = yaml.load(file('Para_info.yml'))
+IOError: [Errno 2] No such file or directory: 'Para_info.yml'
+Traceback (most recent call last):
+  File "train.py", line 10, in <module>
+    Para = yaml.load(file('Para_info.yml'))
+IOError: [Errno 2] No such file or directory: 'Para_info.yml'
+Traceback (most recent call last):
+  File "train.py", line 10, in <module>
+    Para = yaml.load(file('Para_info.yml'))
+IOError: [Errno 2] No such file or directory: 'Para_info.yml'
+Traceback (most recent call last):
+  File "train.py", line 10, in <module>
+    Para = yaml.load(file('Para_info.yml'))
+IOError: [Errno 2] No such file or directory: 'Para_info.yml'
+Traceback (most recent call last):
+  File "train.py", line 10, in <module>
+    Para = yaml.load(file('Para_info.yml'))
+IOError: [Errno 2] No such file or directory: 'Para_info.yml'
