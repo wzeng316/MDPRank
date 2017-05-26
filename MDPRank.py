@@ -3,8 +3,6 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 import yaml
 import tensorflow as tf
-
-from LoadData import *
 from Measure import *
 
 
@@ -41,7 +39,7 @@ def GenEpisode_Softmax(score):
 
 ###################### basic class ########################################
 class RL_BP(object):
-    def __init__(self, Nfeature, Learningrate, Lenepisode, Resultfile):
+    def __init__(self, Nhidden_unit, Nfeature, Learningrate, Lenepisode, Resultfile):
 
         self.Nfeature = Nfeature
         self.Lenepisode = Lenepisode
@@ -56,7 +54,7 @@ class RL_BP(object):
         self.memory = []
         self.ite=0
 
-        hidden_units = 10
+        self.Nhidden_unit = Nhidden_unit
 
         global scores, input_docs, position, learning_rate, sess, train_step, cross_entropy, grads_vars, prob
 
@@ -65,12 +63,12 @@ class RL_BP(object):
         learning_rate = tf.placeholder(tf.float32, shape=[])
 
         # Generate hidden layer
-        W1 = tf.Variable(tf.truncated_normal([self.Nfeature, hidden_units], stddev=0.1 / np.sqrt(float(Nfeature))))
+        W1 = tf.Variable(tf.truncated_normal([self.Nfeature, self.Nhidden_unit], stddev=0.1 / np.sqrt(float(Nfeature))))
         # b1 = tf.Variable(tf.zeros([1, hidden_units]))
         h1 = tf.tanh(tf.matmul(input_docs, W1))
 
         # Second layer -- linear classifier for action logits
-        W2 = tf.Variable(tf.truncated_normal([hidden_units, 1], stddev=0.1 / np.sqrt(float(hidden_units))))
+        W2 = tf.Variable(tf.truncated_normal([self.Nhidden_unit, 1], stddev=0.1 / np.sqrt(float(self.Nhidden_unit))))
         # b2 = tf.Variable(tf.zeros([1]))
         scores = tf.transpose(tf.matmul(h1, W2))  # + b2
         prob = tf.nn.softmax(scores)
@@ -232,8 +230,7 @@ class RL_Softmax_BP(RL_BP):
         print  'jiayou: ', themap, thealldcg, thendcg[0], thendcg[2], thendcg[4], thendcg[9], thedcg[0], thedcg[2], thedcg[4], thedcg[9]
 
 
-
-        info = yaml.dump(info = {"ite": self.ite, "type": type, "MAP": themap, "Return": thealldcg, "DCG": thedcg, "NDCG": thendcg})+'\n'
+        info = yaml.dump({"ite": self.ite, "type": type, "MAP": themap, "Return": thealldcg, "DCG": thedcg, "NDCG": thendcg})+'\n'
         self.resultfile.write(info)
 
 

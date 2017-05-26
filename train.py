@@ -1,5 +1,6 @@
 import  time
-import yaml
+
+from LoadData import *
 from MDPRank import *
 
 if __name__ == '__main__':
@@ -16,7 +17,7 @@ if __name__ == '__main__':
     Learningrate = Para['Learningrate']
     Nepisode = Para['Nepisode']
     Lenepisode = Para['Lenepisode']
-v
+
     ######################### Load Data ##########################################################
     Ip_info = str(yaml.load(file(os.environ['HOME']+'/.host_info.yml'))['host'])
     print Ip_info
@@ -31,14 +32,20 @@ v
     test_data  = LoadData(datafile+'test.txt',  dataset)
     nquery = len(train_data.keys())
 
-    Resultfile = open('ApprenticeRank/'+ Ip_info + '_'+ version + '_' + dataset + '_' + fold + '_*' + model +'*_'+ time.strftime("%m%d", time.localtime()),'w')
+    Resultfile = open('ApprenticeRank/'+ Ip_info + '_'+ version + '+' + dataset + '_' + fold + '_' + model +'_'+ time.strftime("%m%d", time.localtime()),'w')
+    Resultfile.write(yaml.dump(Para) + '\n')
 
-    learner = RL_BP(Nfeature, Learningrate, Lenepisode, Resultfile)
+
+    if model == "Imitation_10":
+        learner = RL_Imi_BP(Nfeature, Learningrate, Lenepisode, Resultfile)
+
+    if model == "Softmax_10":
+        learner = RL_Softmax_BP(Nfeature, Learningrate, Lenepisode, Resultfile)
 
     learner.Eval(train_data, 'train')
     learner.Eval(vali_data , 'vali')
     learner.Eval(test_data , 'test')
-    #np.random.seed(datetime.datetime.now().microsecond)
+    # np.random.seed(datetime.datetime.now().microsecond)
 
     for ite in range(10000):
         batch = np.random.randint(nquery,size=Nepisode)
